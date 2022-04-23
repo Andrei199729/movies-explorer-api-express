@@ -52,8 +52,9 @@ module.exports.createMovie = (req, res, next) => {
         next(new BadRequestError({ message: 'Переданы некорректные данные' }));
       } else if (err.code === 11000) {
         next(new ErrorConflict({ message: 'Фильм уже создан' }));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -72,7 +73,8 @@ module.exports.deleteMovie = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError({ message: 'Переданы некорректные данные' }));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };

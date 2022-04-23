@@ -9,7 +9,7 @@ const ErrorConflict = require('../errors/ErrorConflict');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUser = (req, res, next) => {
-  Users.find({})
+  Users.findById(req.user._id)
     .then((user) => res.status(200).send(user))
     .catch((err) => next(err));
 };
@@ -29,8 +29,11 @@ module.exports.updateUserInfo = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
+      } else if (err.code === 11000) {
+        next(new ErrorConflict(`Пользователь с таким email ${email} уже зарегистрирован`));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -77,7 +80,8 @@ module.exports.login = (req, res, next) => {
     .catch((err) => {
       if (err.message === 'IncorrectEmail') {
         next(new Unauthorized('Не правильный логин или пароль'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };

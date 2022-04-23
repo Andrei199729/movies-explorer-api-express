@@ -1,7 +1,7 @@
 {
   "name": "movies-explorer-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Diploma project Movies-explorer in Yandex Praktikum",
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",

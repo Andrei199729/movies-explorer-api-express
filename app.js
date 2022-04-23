@@ -14,23 +14,34 @@ const limiter = require('./middlewares/rateLimit');
 const errorHandler = require('./middlewares/errorHandler');
 
 // Слушаем 3000 порт
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, NODE_ENV, BASE_URL } = process.env;
+
 const routesErrorsWay = require('./routes/index');
 const auth = require('./middlewares/auth');
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: [
+    'http://localhost:3001',
+    'https://api.arahalevich.movie.nomoredomains.work',
+    'https://arahalevich.movie.nomoredomains.work',
+  ],
+}));
+
+mongoose.connect(NODE_ENV === 'production' ? BASE_URL : 'mongodb://localhost:27017/moviesdb', { useNewUrlParser: true });
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', { useNewUrlParser: true });
-
 app.use(requestLogger); // подключаем логгер запросов
+
 app.use(helmet());
+app.use(limiter);
+
 app.post('/signup', registerValid, createUser);
 app.post('/signin', loginValid, login);
 
-app.use(limiter);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -38,11 +49,11 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.use(errorLogger); // подключаем логгер ошибок
-
 app.use(auth);
 
 app.use('/', routesErrorsWay);
+
+app.use(errorLogger); // подключаем логгер ошибок
 
 app.use(errors());
 
