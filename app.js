@@ -21,7 +21,11 @@ const auth = require('./middlewares/auth');
 
 const app = express();
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: true,
+  },
+));
 
 mongoose.connect(NODE_ENV === 'production' ? BASE_URL : 'mongodb://localhost:27017/moviesdb', { useNewUrlParser: true });
 
