@@ -21,13 +21,7 @@ const auth = require('./middlewares/auth');
 
 const app = express();
 
-app.use(cors({
-  origin: [
-    'http://localhost:3001',
-    'https://api.arahalevich.movie.nomoredomains.work',
-    'https://arahalevich.movie.nomoredomains.work',
-  ],
-}));
+app.use(cors());
 
 mongoose.connect(NODE_ENV === 'production' ? BASE_URL : 'mongodb://localhost:27017/moviesdb', { useNewUrlParser: true });
 
@@ -41,7 +35,6 @@ app.use(limiter);
 
 app.post('/signup', registerValid, createUser);
 app.post('/signin', loginValid, login);
-
 
 app.get('/crash-test', () => {
   setTimeout(() => {
